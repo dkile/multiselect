@@ -256,6 +256,8 @@ export const unifiedData: UnifiedItem[] = [
   { id: 10, label: "Lion", category: "animal", mbti: "ISTJ" },
 ];
 ```
+![react-multiselect-example](https://github.com/user-attachments/assets/72c0d9af-be66-48c5-b8d9-ea5462f22a30)
+
 
 ## 예제 앱 실행
 
