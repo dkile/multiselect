@@ -13,15 +13,19 @@
   - `CollapsePositionFirst` / `CollapsePositionLast` 전략 지원
 
 ## Installation
-
+!under 0.0.7 crashes..install at least 0.0.7 version.
 ```bash
 # pnpm
-pnpm add multiselect-core react-multiselect
+# for core
+pnpm add @dkile/multiselect-core 
+# for react hook
+pnpm add @dkile/react-multiselect
 
 # npm
-npm install multiselect-core react-multiselect
-
-# under 0.0.7 crashes..install at least 0.0.7 version.
+# for core
+npm install @dkile/multiselect-core
+#for react hook
+pnpm add @dkile/react-multiselect
 ```
 
 ## Usage
