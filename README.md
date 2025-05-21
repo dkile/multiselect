@@ -20,6 +20,8 @@ pnpm add multiselect-core react-multiselect
 
 # npm
 npm install multiselect-core react-multiselect
+
+# under 0.0.7 crashes..install at least 0.0.7 version.
 ```
 
 ## Usage
