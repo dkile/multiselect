@@ -1,6 +1,6 @@
 {
   "name": "multiselect",
-  "private": true,
+  "private": false,
   "packageManager": "pnpm@9.14.2",
   "type": "module",
   "workspaces": [
