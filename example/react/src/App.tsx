@@ -1,18 +1,12 @@
 import { useState } from "react";
-import "./App.css";
 import { unifiedData } from "./data";
-import type { UnifiedItem } from "./data";
 import {
   useMultiSelect,
   type UnifiedGroupNode,
   CollapsePositionFirst,
 } from "@dkile/react-multiselect";
 
-function GroupNodeView({
-  node,
-}: {
-  node: UnifiedGroupNode<UnifiedItem, unknown>;
-}) {
+function GroupNodeView({ node }: { node: UnifiedGroupNode<any, any> }) {
   return (
     <li>
       <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -62,10 +56,7 @@ function App() {
       query: search,
       predicate: (item, query) => item.label.includes(query),
     },
-    groupBy: [
-      (item) => item.category,
-      (item) => (item.category === "district" ? item.city : undefined),
-    ],
+    groupBy: [(item) => item.category],
   });
 
   return (
