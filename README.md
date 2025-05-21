@@ -282,11 +282,6 @@ pnpm --filter react-multiselect run build
 pnpm build
 ```
 
-## 문서
-
-- API 레퍼런스: [multiselect-core Docs](https://github.com/your-org/select-example/tree/main/packages/multiselect-core#readme)
-- React Hook: [react-multiselect Docs](https://github.com/your-org/select-example/tree/main/packages/react-multiselect#readme)
-
 ## 기여하기
 
 1. 저장소를 Fork합니다.
