@@ -11,8 +11,8 @@ importers:
   example/react:
     dependencies:
       '@dkile/react-multiselect':
-        specifier: ^0.0.8
-        version: 0.0.8(react@19.1.0)
+        specifier: ^0.0.9
+        version: 0.0.9(react@19.1.0)
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -66,8 +66,8 @@ importers:
   packages/react-multiselect:
     dependencies:
       '@dkile/multiselect-core':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.5
+        version: 0.0.5
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -167,11 +167,11 @@ packages:
     resolution: {integrity: sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q==}
     engines: {node: '>=6.9.0'}
 
-  '@dkile/multiselect-core@0.0.4':
-    resolution: {integrity: sha512-8f7a4w/9RpfVFAj3zIHijvEhWTqCwf1IcILaACTwpCaclNEZ3YN5zb2jNkUbi6snhCjWrFNP/aolxG1N+P19kw==}
+  '@dkile/multiselect-core@0.0.5':
+    resolution: {integrity: sha512-98OmJrnsy7mhwxswFK5pMOkBBMwh/4VHwM2DO6u88Z+9Wv8cCURyWcjE44VaIWwC6XvKAgVVDXR+piLGge2E7w==}
 
-  '@dkile/react-multiselect@0.0.8':
-    resolution: {integrity: sha512-4aYoKZQ9j2Gu6b5wF7kYHaNSSX5ujpWozEJTMRcJcBhaDUARIsnxeJN9e61vWDzIUyuZ1Xdip4M9RREJ0Ev1KQ==}
+  '@dkile/react-multiselect@0.0.9':
+    resolution: {integrity: sha512-5IowL6FLo/3NXr77/0AXSJY5H1AUP+7tgYRS60kN4MfxB95FfAqq3LO99H7M0dHwdkQrLUAFcZ+p9vE2uuhd6w==}
     peerDependencies:
       react: ^18.3.1
 
@@ -1778,11 +1778,11 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-  '@dkile/multiselect-core@0.0.4': {}
+  '@dkile/multiselect-core@0.0.5': {}
 
-  '@dkile/react-multiselect@0.0.8(react@19.1.0)':
+  '@dkile/react-multiselect@0.0.9(react@19.1.0)':
     dependencies:
-      '@dkile/multiselect-core': 0.0.4
+      '@dkile/multiselect-core': 0.0.5
       react: 19.1.0
 
   '@esbuild/aix-ppc64@0.25.4':

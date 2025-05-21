@@ -56,7 +56,10 @@ function App() {
       query: search,
       predicate: (item, query) => item.label.includes(query),
     },
-    groupBy: [(item) => item.category],
+    groupBy: [
+      (item) => item.category,
+      (item) => (item.category === "animal" ? item.mbti : item.taste?.brix),
+    ],
   });
 
   return (
