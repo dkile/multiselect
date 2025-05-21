@@ -59,6 +59,8 @@ export interface MultiSelect<Data, Meta> {
     selected: number;
   };
   getCollapsedSelection(options?: CollapseOptions): CollapsedNode<Data, Meta>[];
+  getGroup(key: ID): UnifiedGroupNode<Data, Meta> | undefined;
+  getItem(key: ID): SelectItem<Data, Meta> | undefined;
 }
 
 export class MultiSelectCore<Data, Meta> implements MultiSelect<Data, Meta> {
@@ -68,6 +70,8 @@ export class MultiSelectCore<Data, Meta> implements MultiSelect<Data, Meta> {
   private lastUnifiedTree?: UnifiedGroupNode<Data, Meta>[];
   private data: Data[];
   private items: SelectItem<Data, Meta>[];
+  private itemMap: Map<ID, SelectItem<Data, Meta>>;
+  private groupMap: Map<ID, UnifiedGroupNode<Data, Meta>>;
   private selectedIds: Set<ID>;
   private listeners = new Set<Listener>();
 
@@ -93,6 +97,11 @@ export class MultiSelectCore<Data, Meta> implements MultiSelect<Data, Meta> {
         this.applyChange.bind(this)
       )
     );
+    this.itemMap = new Map();
+    for (const item of this.items) {
+      this.itemMap.set(item.id, item);
+    }
+    this.groupMap = new Map();
     this.filterManager = new FilterManager(this.items, options.filter);
     this.groupManager = new GroupManager(this.items, options.groupBy ?? []);
 
@@ -258,6 +267,14 @@ export class MultiSelectCore<Data, Meta> implements MultiSelect<Data, Meta> {
 
     this.lastUnifiedTree = finalTree;
     this.lastCacheKey = cacheKey;
+    this.groupMap.clear();
+    const walk = (nodes: UnifiedGroupNode<Data, Meta>[]) => {
+      for (const node of nodes) {
+        this.groupMap.set(node.key, node);
+        walk(node.getSubGroups({ filteredOnly: false }));
+      }
+    };
+    walk(finalTree);
     return finalTree;
   }
 
@@ -276,6 +293,15 @@ export class MultiSelectCore<Data, Meta> implements MultiSelect<Data, Meta> {
     options?: CollapseOptions
   ): CollapsedNode<Data, Meta>[] {
     return this.collapseManager.getCollapsedSelection(options);
+  }
+
+  public getGroup(key: ID): UnifiedGroupNode<Data, Meta> | undefined {
+    this.getGroupTree();
+    return this.groupMap.get(key);
+  }
+
+  public getItem(key: ID): SelectItem<Data, Meta> | undefined {
+    return this.itemMap.get(key);
   }
 }
 
