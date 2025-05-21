@@ -1,0 +1,16 @@
+{
+  "name": "multiselect",
+  "private": true,
+  "packageManager": "pnpm@9.14.2",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "example/*"
+  ],
+  "scripts": {
+    "build:multiselect-core": "pnpm --filter multiselect-core run build",
+    "build:react-multiselect": "pnpm --filter react-multiselect run build",
+    "build:all": "pnpm run build:multiselect-core && pnpm run build:react-multiselect",
+    "build": "pnpm run build:all"
+  }
+}

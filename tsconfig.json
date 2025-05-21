@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/multiselect-core" },
+    { "path": "packages/react-multiselect" }
+  ]
+}

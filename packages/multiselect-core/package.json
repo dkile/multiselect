@@ -1,0 +1,41 @@
+{
+  "name": "multiselect-core",
+  "version": "0.0.1",
+  "description": "Core multi-select logic for filtering, grouping, and collapse",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dkile/multiselect.git",
+    "directory": "packages/multiselect-core"
+  },
+  "keywords": [
+    "multiselect",
+    "filter",
+    "group",
+    "typescript"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepare": "pnpm run build"
+  },
+  "peerDependencies": {},
+  "dependencies": {},
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "*"
+  }
+}
