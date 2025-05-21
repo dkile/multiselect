@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dkile/react-multiselect": "file:../../packages/react-multiselect/dkile-react-multiselect-0.0.4.tgz",
+    "@dkile/react-multiselect": "^0.0.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

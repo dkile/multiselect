@@ -1,6 +1,6 @@
 {
   "name": "@dkile/react-multiselect",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "React hook wrapper for multiselect-core",
   "repository": {
     "type": "git",
@@ -20,13 +20,13 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
