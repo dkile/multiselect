@@ -13,11 +13,13 @@
   - `CollapsePositionFirst` / `CollapsePositionLast` 전략 지원
 
 ## Installation
+
 !under 0.0.7 crashes..install at least 0.0.7 version.
+
 ```bash
 # pnpm
 # for core
-pnpm add @dkile/multiselect-core 
+pnpm add @dkile/multiselect-core
 # for react hook
 pnpm add @dkile/react-multiselect
 
@@ -103,76 +105,156 @@ console.log(
 ### B. React Hook (react-multiselect)
 
 ```tsx
-import React, { useState } from "react";
+import { useState } from "react";
+import { unifiedData } from "./data";
 import {
   useMultiSelect,
+  type UnifiedGroupNode,
   CollapsePositionFirst,
-  CollapsePositionLast,
-} from "react-multiselect";
+} from "@dkile/react-multiselect";
 
-interface ItemData {
-  id: number;
-  label: string;
-  category: string;
+function GroupNodeView({ node }: { node: UnifiedGroupNode<any, any> }) {
+  return (
+    <li>
+      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+        <input
+          type="checkbox"
+          checked={node.isAllSelected({ filteredOnly: true })}
+          onChange={() => node.toggle({ filteredOnly: true })}
+        />
+        <span>
+          {node.key} (level {node.level}) [{node.filteredCount}/
+          {node.totalCount}]
+        </span>
+      </div>
+      {node.hasSubGroups({ filteredOnly: true }) ? (
+        <ul>
+          {node.getSubGroups({ filteredOnly: true }).map((child) => (
+            <GroupNodeView key={child.path.join("-")} node={child} />
+          ))}
+        </ul>
+      ) : (
+        <ul>
+          {node.getItems({ filteredOnly: true }).map((item) => (
+            <li key={item.id}>
+              <input
+                type="checkbox"
+                checked={item.isSelected}
+                onChange={() => item.toggle()}
+              />
+              {item.data.label}
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  );
 }
 
-export function App() {
+function App() {
   const [search, setSearch] = useState("");
-  const ms = useMultiSelect<ItemData>({
-    data,
-    itemDef: { id_accessor: (item) => item.id },
+
+  const multiSelect = useMultiSelect({
+    data: unifiedData,
+    itemDef: {
+      id_accessor: (item) => item.id,
+    },
     filter: {
       query: search,
-      predicate: (item, q) =>
-        item.label.toLowerCase().includes(q.toLowerCase()),
+      predicate: (item, query) => item.label.includes(query),
     },
-    groupBy: [(item) => item.category],
+    groupBy: [
+      (item) => item.category,
+      (item) => (item.category === "animal" ? item.mbti : item.taste?.brix),
+    ],
   });
 
   return (
     <div>
-      {/* 검색 */}
+      <div>
+        <ul style={{ display: "flex", gap: "10px" }}>
+          {multiSelect
+            .getCollapsedSelection({
+              positionStrategy: CollapsePositionFirst,
+            })
+            .map((node) =>
+              node.type === "group" ? (
+                <li
+                  key={node.node.key}
+                  style={{ backgroundColor: "lightgray" }}
+                >
+                  {node.node.path.join(" > ")}
+                </li>
+              ) : (
+                <li key={node.node.id} style={{ backgroundColor: "lightgray" }}>
+                  {node.node.data.label}
+                </li>
+              )
+            )}
+        </ul>
+      </div>
+      <button type="button" onClick={() => multiSelect.selectAll()}>
+        전체 선택
+      </button>
+      <button type="button" onClick={() => multiSelect.unselectAll()}>
+        전체 해제
+      </button>
       <input
-        placeholder="Search..."
+        type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-
-      {/* 액션 */}
-      <button onClick={() => ms.selectAll()}>Select All</button>
-      <button onClick={() => ms.unselectAll()}>Clear All</button>
-
-      {/* 결과 */}
-      <h3>Filtered Items</h3>
-      <pre>{JSON.stringify(ms.getItems({ filteredOnly: true }), null, 2)}</pre>
-
-      <h3>Group Tree</h3>
-      <pre>
-        {JSON.stringify(
-          ms.getGroupTree({ filter: { filteredOnly: true } }),
-          null,
-          2
-        )}
-      </pre>
-
-      <h3>Collapsed Selection</h3>
-      <ul>
-        {ms
-          .getCollapsedSelection({
-            filteredOnly: true,
-            positionStrategy: CollapsePositionFirst,
-          })
-          .map((node) =>
-            node.type === "group" ? (
-              <li key={node.node.key}>Group: {node.node.path.join(" > ")}</li>
-            ) : (
-              <li key={node.node.id}>{node.node.data.label}</li>
-            )
-          )}
-      </ul>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <ul>
+          {multiSelect
+            .getGroupTree({
+              filter: { filteredOnly: true },
+            })
+            .map((node) => (
+              <GroupNodeView key={node.path.join("-")} node={node} />
+            ))}
+        </ul>
+        <ul>
+          {multiSelect.getSelectedIds().map((id) => (
+            <li key={id}>{id}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
+
+export default App;
+```
+
+```tsx
+export interface UnifiedItem {
+  id: number;
+  label: string;
+  category: string;
+  taste?: {
+    brix: number;
+  };
+  mbti?: string;
+}
+
+export const unifiedData: UnifiedItem[] = [
+  { id: 1, label: "Apple", category: "fruit", taste: { brix: 10 } },
+  { id: 2, label: "Banana", category: "fruit", taste: { brix: 15 } },
+  {
+    id: 3,
+    label: "Cherry",
+    category: "fruit",
+    taste: { brix: 10 },
+  },
+  { id: 4, label: "Carrot", category: "vegetable", taste: { brix: 2 } },
+  { id: 5, label: "Broccoli", category: "vegetable", taste: { brix: 1 } },
+  { id: 6, label: "Spinach", category: "vegetable", taste: { brix: 1 } },
+  { id: 7, label: "Dog", category: "animal", mbti: "ENFP" },
+  { id: 8, label: "Cat", category: "animal", mbti: "INFP" },
+  { id: 9, label: "Elephant", category: "animal", mbti: "ENFP" },
+  { id: 10, label: "Lion", category: "animal", mbti: "ISTJ" },
+];
 ```
 
 ## 예제 앱 실행
