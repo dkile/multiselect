@@ -20,8 +20,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
     },
     "./package.json": "./package.json"
   },
