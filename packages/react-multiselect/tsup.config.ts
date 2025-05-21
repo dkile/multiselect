@@ -7,6 +7,6 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: "dist",
-  external: ["react", "react-dom", "multiselect-core"],
+  external: ["react", "@dkile/multiselect-core"],
   minify: false,
 });

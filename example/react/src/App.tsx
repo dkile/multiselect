@@ -1,9 +1,12 @@
 import { useState } from "react";
 import "./App.css";
 import { unifiedData } from "./data";
-import type { UnifiedGroupNode } from "./multiselect-core/group-filter";
 import type { UnifiedItem } from "./data";
-import { CollapsePositionFirst, useMultiSelect } from "./use-multiselect";
+import {
+  useMultiSelect,
+  type UnifiedGroupNode,
+  CollapsePositionFirst,
+} from "@dkile/react-multiselect";
 
 function GroupNodeView({
   node,
