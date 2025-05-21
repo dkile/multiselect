@@ -12,6 +12,7 @@ export interface UnifiedGroupNode<Data, Meta> {
   path: ID[];
   getItems(options?: ScopeOptions): SelectItem<Data, Meta>[];
   getSubGroups(_options?: ScopeOptions): UnifiedGroupNode<Data, Meta>[];
+  getSubGroup(key: ID): UnifiedGroupNode<Data, Meta> | undefined;
   hasSubGroups(_options?: ScopeOptions): boolean;
   select(options?: { filteredOnly?: boolean }): void;
   unselect(options?: { filteredOnly?: boolean }): void;
@@ -58,6 +59,9 @@ export function unifyGroupNodes<Data, Meta>(
       },
       getSubGroups(): UnifiedGroupNode<Data, Meta>[] {
         return childrenUnified;
+      },
+      getSubGroup(key: ID): UnifiedGroupNode<Data, Meta> | undefined {
+        return childrenUnified.find((child) => child.key === key);
       },
       hasSubGroups(): boolean {
         return childrenUnified.length > 0;
