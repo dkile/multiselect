@@ -33,13 +33,13 @@
     "prepare": "pnpm run build"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
+    "react": "^18.3.1"
   },
   "dependencies": {
     "multiselect-core": "workspace:*"
   },
   "devDependencies": {
+    "@types/react": "^18.3.3",
     "tsup": "^8.5.0",
     "typescript": "*"
   }
