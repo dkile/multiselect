@@ -256,8 +256,7 @@ export const unifiedData: UnifiedItem[] = [
   { id: 10, label: "Lion", category: "animal", mbti: "ISTJ" },
 ];
 ```
-![화면 기록 2025-05-21 오후 10 20 35 (online-video-cutter com)](https://github.com/user-attachments/assets/1a634706-474e-4542-9c44-b3e90182fd08)
-
+![화면 기록 2025-05-21 오후 10 34 09](https://github.com/user-attachments/assets/64ff34c5-0750-423b-822b-7389f45ce22c)
 
 
 ## 예제 앱 실행
