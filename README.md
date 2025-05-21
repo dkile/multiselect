@@ -1,6 +1,6 @@
 # Multiselect
 
-**Multiselect**는 순수 로직 패키지인 **multiselect-core**와 React 훅 래퍼 **react-multiselect**를 포함하는 다중 선택 라이브러리입니다. 필터링, 그룹핑, 캐싱, collapse 전략을 간편하게 제공합니다.
+**Multiselect**는 순수 로직 패키지인 **multiselect-core**와 React 훅 래퍼 **react-multiselect**를 포함하는 다중 선택 라이브러리입니다. 필터링, 그룹핑, collapse 전략을 간편하게 제공합니다.
 
 ## Features
 
