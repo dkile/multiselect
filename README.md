@@ -259,7 +259,7 @@ export const unifiedData: UnifiedItem[] = [
 ![example](https://github.com/user-attachments/assets/e0cc3ff0-a5ba-4899-bd78-1da9ca4237aa)
 
 
-## 예제 앱 실행
+## Start example
 
 ```bash
 cd example/react
@@ -269,7 +269,7 @@ pnpm dev
 
 로컬에서 `http://localhost:5173`으로 접속하여 확인하세요.
 
-## 빌드 & 배포
+## Build
 
 루트 디렉터리에서:
 
@@ -282,7 +282,7 @@ pnpm --filter react-multiselect run build
 pnpm build
 ```
 
-## 기여하기
+## Contribute
 
 1. 저장소를 Fork합니다.
 2. 새로운 브랜치를 만듭니다: `git switch -c feature/your-feature`
@@ -292,10 +292,10 @@ pnpm build
 
 프로젝트에 기여해 주셔서 감사합니다! 🙏
 
-## 라이선스
+## License
 
 MIT © Your Organization
 
-## 지원
+## Support
 
 버그 리포트 및 피처 요청은 Github Issue를 이용해주세요.
