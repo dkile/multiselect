@@ -6,15 +6,15 @@ export interface ScopeOptions {
   filteredOnly?: boolean;
 }
 
-export interface UnifiedGroupNode<Data, Meta, GroupHeader = unknown> {
+export interface UnifiedGroupNode<Data, Meta, GroupMeta = unknown> {
   key: ID;
   level: number;
   path: ID[];
   getItems(options?: ScopeOptions): SelectItem<Data, Meta>[];
   getSubGroups(
     options?: ScopeOptions
-  ): UnifiedGroupNode<Data, Meta, GroupHeader>[];
-  getSubGroup(key: ID): UnifiedGroupNode<Data, Meta, GroupHeader> | undefined;
+  ): UnifiedGroupNode<Data, Meta, GroupMeta>[];
+  getSubGroup(key: ID): UnifiedGroupNode<Data, Meta, GroupMeta> | undefined;
   hasSubGroups(options?: ScopeOptions): boolean;
   select(options?: { filteredOnly?: boolean }): void;
   unselect(options?: { filteredOnly?: boolean }): void;
@@ -22,7 +22,7 @@ export interface UnifiedGroupNode<Data, Meta, GroupHeader = unknown> {
   isAllSelected(options?: { filteredOnly?: boolean }): boolean;
   totalCount: number;
   filteredCount: number;
-  getHeader(): GroupHeader | undefined;
+  getMeta(): GroupMeta | undefined;
 }
 
 function collectRawLeaves<Data, Meta>(
@@ -38,37 +38,37 @@ function collectRawLeaves<Data, Meta>(
   return node.items;
 }
 
-export function unifyGroupNodes<Data, Meta, GroupHeader = unknown>(
+export function unifyGroupNodes<Data, Meta, GroupMeta = unknown>(
   nodes: GroupNode<Data, Meta>[],
   filteredSet: Set<ID>,
   filteredOnly: boolean
-): UnifiedGroupNode<Data, Meta, GroupHeader>[] {
-  const result: UnifiedGroupNode<Data, Meta, GroupHeader>[] = [];
+): UnifiedGroupNode<Data, Meta, GroupMeta>[] {
+  const result: UnifiedGroupNode<Data, Meta, GroupMeta>[] = [];
   for (const node of nodes) {
     const allLeaves = collectRawLeaves(node);
     const filteredLeaves = allLeaves.filter((i) => filteredSet.has(i.id));
     if (filteredOnly && filteredLeaves.length === 0) continue;
-    const childrenUnified = unifyGroupNodes<Data, Meta, GroupHeader>(
+    const childrenUnified = unifyGroupNodes<Data, Meta, GroupMeta>(
       node.children ?? [],
       filteredSet,
       filteredOnly
     );
-    const unified: UnifiedGroupNode<Data, Meta, GroupHeader> = {
+    const unified: UnifiedGroupNode<Data, Meta, GroupMeta> = {
       key: node.key,
       level: node.level,
       path: node.path,
-      getHeader(): GroupHeader | undefined {
+      getMeta(): GroupMeta | undefined {
         return undefined;
       },
       getItems({ filteredOnly: fo } = {}): SelectItem<Data, Meta>[] {
         return fo ? filteredLeaves : allLeaves;
       },
-      getSubGroups(): UnifiedGroupNode<Data, Meta, GroupHeader>[] {
+      getSubGroups(): UnifiedGroupNode<Data, Meta, GroupMeta>[] {
         return childrenUnified;
       },
       getSubGroup(
         key: ID
-      ): UnifiedGroupNode<Data, Meta, GroupHeader> | undefined {
+      ): UnifiedGroupNode<Data, Meta, GroupMeta> | undefined {
         return childrenUnified.find((child) => child.key === key);
       },
       hasSubGroups(): boolean {
@@ -100,7 +100,7 @@ export function unifyGroupNodes<Data, Meta, GroupHeader = unknown>(
       totalCount: allLeaves.length,
       filteredCount: filteredLeaves.length,
     };
-    result.push(unified as UnifiedGroupNode<Data, Meta, GroupHeader>);
+    result.push(unified as UnifiedGroupNode<Data, Meta, GroupMeta>);
   }
   return result;
 }

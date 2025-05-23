@@ -16,20 +16,16 @@ import type {
   CollapsedNode,
 } from "./collapse/collapse-strategy";
 
-export interface GroupByDescriptor<Data, GroupHeader = unknown> {
+export interface GroupByDescriptor<Data, Meta = unknown, GroupMeta = unknown> {
   accessor: Accessor<Data>;
-  getHeader?: (groupKey: ID, items: Data[], level: number) => GroupHeader;
+  getMeta?: (groupKey: ID, items: Data[], level: number) => GroupMeta;
 }
 
 export interface MultiSelectState {
   selectedIds: Set<ID>;
 }
 
-export interface MultiSelectOptions<
-  Data,
-  Meta = unknown,
-  GroupHeader = unknown
-> {
+export interface MultiSelectOptions<Data, Meta = unknown, GroupMeta = unknown> {
   data: Data[];
   itemDef: ItemDef<Data, Meta>;
   initialState?: Omit<MultiSelectState, "selectedIds"> & {
@@ -37,7 +33,7 @@ export interface MultiSelectOptions<
   };
   filter?: MultiSelectFilter<Data, Meta>;
   scheduler?: Scheduler;
-  groupBy?: Array<Accessor<Data> | GroupByDescriptor<Data, GroupHeader>>;
+  groupBy?: Array<Accessor<Data> | GroupByDescriptor<Data, Meta, GroupMeta>>;
 }
 
 type Listener = (
@@ -45,7 +41,7 @@ type Listener = (
   diff: { added: ID[]; removed: ID[] }
 ) => void;
 
-export interface MultiSelect<Data, Meta = unknown, GroupHeader = unknown> {
+export interface MultiSelect<Data, Meta = unknown, GroupMeta = unknown> {
   subscribe(listener: Listener): () => void;
   getItems(): SelectItem<Data, Meta>[];
   getSelectedIds(options?: { filteredOnly?: boolean }): ID[];
@@ -64,28 +60,28 @@ export interface MultiSelect<Data, Meta = unknown, GroupHeader = unknown> {
   setFilter(filter?: MultiSelectFilter<Data, Meta>): void;
   getGroupTree(
     options?: GroupTreeOptions
-  ): UnifiedGroupNode<Data, Meta, GroupHeader>[];
+  ): UnifiedGroupNode<Data, Meta, GroupMeta>[];
   getSelectionSummary(options?: { filteredOnly?: boolean }): {
     total: number;
     selected: number;
   };
   getCollapsedSelection(options?: CollapseOptions): CollapsedNode<Data, Meta>[];
-  getGroup(key: ID): UnifiedGroupNode<Data, Meta, GroupHeader> | undefined;
+  getGroup(key: ID): UnifiedGroupNode<Data, Meta, GroupMeta> | undefined;
   getItem(key: ID): SelectItem<Data, Meta> | undefined;
-  getGroupHeader(groupKey: ID): GroupHeader | undefined;
+  getGroupMeta(groupKey: ID): GroupMeta | undefined;
 }
 
-export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
-  implements MultiSelect<Data, Meta, GroupHeader>
+export class MultiSelectCore<Data, Meta = unknown, GroupMeta = unknown>
+  implements MultiSelect<Data, Meta, GroupMeta>
 {
   private rawGroupTree: GroupNode<Data, Meta>[];
   private filterManager: FilterManager<Data, Meta>;
   private lastCacheKey?: string;
-  private lastUnifiedTree?: UnifiedGroupNode<Data, Meta, GroupHeader>[];
+  private lastUnifiedTree?: UnifiedGroupNode<Data, Meta, GroupMeta>[];
   private data: Data[];
   private items: SelectItem<Data, Meta>[];
   private itemMap: Map<ID, SelectItem<Data, Meta>>;
-  private groupMap: Map<ID, UnifiedGroupNode<Data, Meta, GroupHeader>>;
+  private groupMap: Map<ID, UnifiedGroupNode<Data, Meta, GroupMeta>>;
   private selectedIds: Set<ID>;
   private listeners = new Set<Listener>();
 
@@ -97,12 +93,11 @@ export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
   private scheduler: Scheduler;
   private groupManager: GroupManager<Data, Meta>;
   private collapseManager: CollapseManager<Data, Meta>;
-  private headerGenerators: Array<
-    ((groupKey: ID, items: Data[], level: number) => GroupHeader) | undefined
+  private metaFns: Array<
+    ((groupKey: ID, items: Data[], level: number) => GroupMeta) | undefined
   >;
-  private groupHeaders: Map<ID, GroupHeader | undefined> = new Map();
 
-  constructor(options: MultiSelectOptions<Data, Meta, GroupHeader>) {
+  constructor(options: MultiSelectOptions<Data, Meta, GroupMeta>) {
     this.data = options.data;
     const idAccessor = options.itemDef.id_accessor;
     this.selectedIds = new Set(options.initialState?.selectedIds);
@@ -123,13 +118,13 @@ export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
     this.filterManager = new FilterManager(this.items, options.filter);
     const groupBySpecs =
       options.groupBy ??
-      ([] as Array<Accessor<Data> | GroupByDescriptor<Data, GroupHeader>>);
+      ([] as Array<Accessor<Data> | GroupByDescriptor<Data, Meta, GroupMeta>>);
     const accessors = groupBySpecs.map((spec) =>
       typeof spec === "object" ? spec.accessor : spec
     );
     this.groupManager = new GroupManager(this.items, accessors);
-    this.headerGenerators = groupBySpecs.map((spec) =>
-      typeof spec === "object" ? spec.getHeader : undefined
+    this.metaFns = groupBySpecs.map((spec) =>
+      typeof spec === "object" ? spec.getMeta : undefined
     );
 
     this.rawGroupTree = this.groupManager.getGroupTree();
@@ -259,7 +254,7 @@ export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
 
   public getGroupTree(
     options?: GroupTreeOptions
-  ): UnifiedGroupNode<Data, Meta, GroupHeader>[] {
+  ): UnifiedGroupNode<Data, Meta, GroupMeta>[] {
     const filteredOnly = options?.filter?.filteredOnly ?? false;
     const selectedOnly = options?.selection?.selectedOnly ?? false;
     const includePartial = options?.selection?.includePartial ?? false;
@@ -279,13 +274,13 @@ export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
       filteredSet,
       effectiveFilteredOnly
     );
-    const unifiedByFilter = unifyGroupNodes<Data, Meta, GroupHeader>(
+    const unifiedByFilter = unifyGroupNodes<Data, Meta, GroupMeta>(
       prunedFilter,
       filteredSet,
       effectiveFilteredOnly
     );
     const selectionSet = new Set(this.getSelectedIds({ filteredOnly }));
-    const finalTree = pruneUnifiedBySelection<Data, Meta, GroupHeader>(
+    const finalTree = pruneUnifiedBySelection<Data, Meta, GroupMeta>(
       unifiedByFilter,
       selectionSet,
       selectedOnly,
@@ -295,41 +290,31 @@ export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
     this.lastUnifiedTree = finalTree;
     this.lastCacheKey = cacheKey;
     this.groupMap.clear();
-    const walk = (nodes: UnifiedGroupNode<Data, Meta, GroupHeader>[]) => {
+    const walk = (nodes: UnifiedGroupNode<Data, Meta, GroupMeta>[]) => {
       for (const node of nodes) {
         this.groupMap.set(node.key, node);
         walk(node.getSubGroups({ filteredOnly: false }));
       }
     };
     walk(finalTree);
-    this.groupHeaders.clear();
-    const computeHeaders = (
-      nodes: UnifiedGroupNode<Data, Meta, GroupHeader>[]
-    ) => {
-      for (const node of nodes) {
-        const getter = this.headerGenerators[node.level];
-        const dataItems = node
-          .getItems({ filteredOnly: false })
-          .map((item) => item.data);
-        const headerVal: GroupHeader | undefined = getter
-          ? getter(node.key, dataItems, node.level)
-          : undefined;
-        this.groupHeaders.set(node.key, headerVal);
-        const subs = node.getSubGroups({ filteredOnly: false });
-        if (subs.length > 0) computeHeaders(subs);
-      }
-    };
-    computeHeaders(finalTree);
-    const attachHeader = (
-      nodes: UnifiedGroupNode<Data, Meta, GroupHeader>[]
+
+    const attachMeta = (
+      nodes: UnifiedGroupNode<Data, Meta, GroupMeta>[]
     ): void => {
       for (const node of nodes) {
-        node.getHeader = () => this.groupHeaders.get(node.key);
-        const subs = node.getSubGroups({ filteredOnly: false });
-        if (subs.length > 0) attachHeader(subs);
+        const fn = this.metaFns[node.level];
+        node.getMeta = () =>
+          fn
+            ? fn(
+                node.key,
+                node.getItems({ filteredOnly: false }).map((i) => i.data),
+                node.level
+              )
+            : undefined;
+        attachMeta(node.getSubGroups({ filteredOnly: false }));
       }
     };
-    attachHeader(finalTree);
+    attachMeta(finalTree);
     return finalTree;
   }
 
@@ -352,7 +337,7 @@ export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
 
   public getGroup(
     key: ID
-  ): UnifiedGroupNode<Data, Meta, GroupHeader> | undefined {
+  ): UnifiedGroupNode<Data, Meta, GroupMeta> | undefined {
     this.getGroupTree();
     return this.groupMap.get(key);
   }
@@ -361,13 +346,13 @@ export class MultiSelectCore<Data, Meta = unknown, GroupHeader = unknown>
     return this.itemMap.get(key);
   }
 
-  public getGroupHeader(groupKey: ID): GroupHeader | undefined {
-    return this.groupHeaders.get(groupKey);
+  public getGroupMeta(groupKey: ID): GroupMeta | undefined {
+    return this.getGroup(groupKey)?.getMeta();
   }
 }
 
-export function createMultiSelect<Data, Meta = unknown, GroupHeader = unknown>(
-  options: MultiSelectOptions<Data, Meta, GroupHeader>
-): MultiSelect<Data, Meta, GroupHeader> {
-  return new MultiSelectCore<Data, Meta, GroupHeader>(options);
+export function createMultiSelect<Data, Meta = unknown, GroupMeta = unknown>(
+  options: MultiSelectOptions<Data, Meta, GroupMeta>
+): MultiSelect<Data, Meta, GroupMeta> {
+  return new MultiSelectCore<Data, Meta, GroupMeta>(options);
 }
