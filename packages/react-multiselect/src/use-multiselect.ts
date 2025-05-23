@@ -6,11 +6,11 @@ import {
   type MultiSelect,
 } from "multiselect-core";
 
-export function useMultiSelect<Data, Meta = unknown, GroupHeader = unknown>(
-  options: MultiSelectOptions<Data, Meta, GroupHeader>
-): MultiSelect<Data, Meta, GroupHeader> {
+export function useMultiSelect<Data, Meta = unknown, GroupMeta = unknown>(
+  options: MultiSelectOptions<Data, Meta, GroupMeta>
+): MultiSelect<Data, Meta, GroupMeta> {
   const coreRef = useRef(
-    createMultiSelect<Data, Meta, GroupHeader>({
+    createMultiSelect<Data, Meta, GroupMeta>({
       ...options,
       scheduler: rafScheduler,
     })

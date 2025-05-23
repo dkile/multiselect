@@ -65,7 +65,9 @@ export interface MultiSelect<Data, Meta = unknown, GroupMeta = unknown> {
     total: number;
     selected: number;
   };
-  getCollapsedSelection(options?: CollapseOptions): CollapsedNode<Data, Meta>[];
+  getCollapsedSelection(
+    options?: CollapseOptions
+  ): CollapsedNode<Data, Meta, GroupMeta>[];
   getGroup(key: ID): UnifiedGroupNode<Data, Meta, GroupMeta> | undefined;
   getItem(key: ID): SelectItem<Data, Meta> | undefined;
   getGroupMeta(groupKey: ID): GroupMeta | undefined;
@@ -92,7 +94,7 @@ export class MultiSelectCore<Data, Meta = unknown, GroupMeta = unknown>
   private isFlushScheduled = false;
   private scheduler: Scheduler;
   private groupManager: GroupManager<Data, Meta>;
-  private collapseManager: CollapseManager<Data, Meta>;
+  private collapseManager: CollapseManager<Data, Meta, GroupMeta>;
   private metaFns: Array<
     ((groupKey: ID, items: Data[], level: number) => GroupMeta) | undefined
   >;
@@ -129,7 +131,7 @@ export class MultiSelectCore<Data, Meta = unknown, GroupMeta = unknown>
 
     this.rawGroupTree = this.groupManager.getGroupTree();
     this.scheduler = options.scheduler ?? rafScheduler;
-    this.collapseManager = new CollapseManager(this);
+    this.collapseManager = new CollapseManager<Data, Meta, GroupMeta>(this);
   }
 
   private applyChange(change: { added?: ID[]; removed?: ID[] }) {
@@ -331,7 +333,7 @@ export class MultiSelectCore<Data, Meta = unknown, GroupMeta = unknown>
 
   public getCollapsedSelection(
     options?: CollapseOptions
-  ): CollapsedNode<Data, Meta>[] {
+  ): CollapsedNode<Data, Meta, GroupMeta>[] {
     return this.collapseManager.getCollapsedSelection(options);
   }
 

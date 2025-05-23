@@ -7,11 +7,11 @@ import type {
   PositionStrategy,
 } from "./collapse-strategy";
 
-export class CollapseManager<Data, Meta> {
+export class CollapseManager<Data, Meta = unknown, GroupMeta = unknown> {
   private orderMap = new Map<ID, number>();
   private counter = 0;
 
-  constructor(private ms: MultiSelect<Data, Meta>) {
+  constructor(private ms: MultiSelect<Data, Meta, GroupMeta>) {
     ms.subscribe((_state, diff) => {
       for (const id of diff.added) {
         this.orderMap.set(id, this.counter++);
@@ -24,7 +24,7 @@ export class CollapseManager<Data, Meta> {
 
   public getCollapsedSelection(
     options: CollapseOptions = {}
-  ): CollapsedNode<Data, Meta>[] {
+  ): CollapsedNode<Data, Meta, GroupMeta>[] {
     const filteredOnly = options.filteredOnly;
     const positionStrategy: PositionStrategy =
       options.positionStrategy ?? CollapsePositionFirst;
