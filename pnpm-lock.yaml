@@ -66,8 +66,8 @@ importers:
   packages/react-multiselect:
     dependencies:
       '@dkile/multiselect-core':
-        specifier: ^0.0.5
-        version: 0.0.5
+        specifier: ^0.0.8
+        version: 0.0.8
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -169,6 +169,9 @@ packages:
 
   '@dkile/multiselect-core@0.0.5':
     resolution: {integrity: sha512-98OmJrnsy7mhwxswFK5pMOkBBMwh/4VHwM2DO6u88Z+9Wv8cCURyWcjE44VaIWwC6XvKAgVVDXR+piLGge2E7w==}
+
+  '@dkile/multiselect-core@0.0.8':
+    resolution: {integrity: sha512-6fMYvJTDO44IhxVjirhraQsfkGtKHeSD/XGk0JxpliC4NMKvIUuZMSxPsAyPcecgGlDBcrGGKJ+im3KaOGRgfg==}
 
   '@dkile/react-multiselect@0.0.9':
     resolution: {integrity: sha512-5IowL6FLo/3NXr77/0AXSJY5H1AUP+7tgYRS60kN4MfxB95FfAqq3LO99H7M0dHwdkQrLUAFcZ+p9vE2uuhd6w==}
@@ -1779,6 +1782,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.27.1
 
   '@dkile/multiselect-core@0.0.5': {}
+
+  '@dkile/multiselect-core@0.0.8': {}
 
   '@dkile/react-multiselect@0.0.9(react@19.1.0)':
     dependencies:

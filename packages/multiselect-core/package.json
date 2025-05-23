@@ -1,6 +1,6 @@
 {
   "name": "@dkile/multiselect-core",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Core multi-select logic for filtering, grouping, and collapse",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

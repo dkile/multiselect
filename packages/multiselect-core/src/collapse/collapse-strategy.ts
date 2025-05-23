@@ -10,25 +10,29 @@ export const CollapsePositionFirst: PositionStrategy = (inds) =>
 export const CollapsePositionLast: PositionStrategy = (inds) =>
   Math.max(...inds);
 
-export type CollapsedNode<Data, Meta> =
+export type CollapsedNode<Data, Meta, GroupMeta = unknown> =
   | { type: "item"; node: SelectItem<Data, Meta>; order: number }
-  | { type: "group"; node: UnifiedGroupNode<Data, Meta>; order: number };
+  | {
+      type: "group";
+      node: UnifiedGroupNode<Data, Meta, GroupMeta>;
+      order: number;
+    };
 
 export interface CollapseOptions {
   filteredOnly?: boolean;
   positionStrategy?: PositionStrategy;
 }
 
-export function collapseSelection<Data, Meta>(
-  tree: UnifiedGroupNode<Data, Meta>[],
+export function collapseSelection<Data, Meta, GroupMeta = unknown>(
+  tree: UnifiedGroupNode<Data, Meta, GroupMeta>[],
   orderMap: Map<ID, number>,
   options: CollapseOptions = {}
-): CollapsedNode<Data, Meta>[] {
+): CollapsedNode<Data, Meta, GroupMeta>[] {
   const { filteredOnly = false, positionStrategy = CollapsePositionFirst } =
     options;
-  const out: CollapsedNode<Data, Meta>[] = [];
+  const out: CollapsedNode<Data, Meta, GroupMeta>[] = [];
 
-  function walk(nodes: UnifiedGroupNode<Data, Meta>[]) {
+  function walk(nodes: UnifiedGroupNode<Data, Meta, GroupMeta>[]) {
     for (const node of nodes) {
       const items = node.getItems({ filteredOnly });
       const sel = items.filter((i) => i.isSelected);
