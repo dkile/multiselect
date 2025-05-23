@@ -50,14 +50,14 @@ export function pruneTreeByFilter<Data, Meta>(
   return result;
 }
 
-export function pruneUnifiedBySelection<Data, Meta>(
-  nodes: UnifiedGroupNode<Data, Meta>[],
+export function pruneUnifiedBySelection<Data, Meta, GroupHeader = unknown>(
+  nodes: UnifiedGroupNode<Data, Meta, GroupHeader>[],
   selectionSet: Set<ID>,
   selectedOnly: boolean,
   includePartial: boolean
-): UnifiedGroupNode<Data, Meta>[] {
+): UnifiedGroupNode<Data, Meta, GroupHeader>[] {
   if (!selectedOnly) return nodes;
-  const result: UnifiedGroupNode<Data, Meta>[] = [];
+  const result: UnifiedGroupNode<Data, Meta, GroupHeader>[] = [];
   for (const node of nodes) {
     const allItems = node.getItems({ filteredOnly: false });
     const selLeaves = allItems.filter((item) => selectionSet.has(item.id));
@@ -75,13 +75,13 @@ export function pruneUnifiedBySelection<Data, Meta>(
       includePartial
     );
 
-    const clone: UnifiedGroupNode<Data, Meta> = Object.assign(
+    const clone: UnifiedGroupNode<Data, Meta, GroupHeader> = Object.assign(
       Object.create(Object.getPrototypeOf(node)),
       node
     );
     clone.getSubGroups = () => childrenPruned;
     clone.hasSubGroups = () => childrenPruned.length > 0;
-    result.push(clone);
+    result.push(clone as UnifiedGroupNode<Data, Meta, GroupHeader>);
   }
   return result;
 }

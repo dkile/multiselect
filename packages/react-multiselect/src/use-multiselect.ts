@@ -6,11 +6,14 @@ import {
   type MultiSelect,
 } from "multiselect-core";
 
-export function useMultiSelect<Data, Meta>(
-  options: MultiSelectOptions<Data, Meta>
-): MultiSelect<Data, Meta> {
+export function useMultiSelect<Data, Meta = unknown, GroupHeader = unknown>(
+  options: MultiSelectOptions<Data, Meta, GroupHeader>
+): MultiSelect<Data, Meta, GroupHeader> {
   const coreRef = useRef(
-    createMultiSelect<Data, Meta>({ ...options, scheduler: rafScheduler })
+    createMultiSelect<Data, Meta, GroupHeader>({
+      ...options,
+      scheduler: rafScheduler,
+    })
   );
 
   coreRef.current.setFilter(options.filter);
